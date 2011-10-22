@@ -9,13 +9,21 @@ sub clock {
     nqp::p6box_n(pir::time__n())
 }
 
-our sub timer(:&cb!, :$after!, :$interval) {
-    @timers.push: { :$after, :$interval, :&cb, keep => 1, lastrun => 0 };
+our sub timer(:&cb!, :$after!, :$interval, :%params) {
+    @timers.push: {
+        :$after, :$interval, :&cb,
+        :%params,
+        keep => 1, lastrun => 0
+    };
 }
 
-our sub socket(:&cb!, :$socket!, :$poll where 'r'|'w') {
+our sub socket(:&cb!, :$socket!, :$poll where 'r'|'w', :%params) {
     my $p = $poll eq 'r' ?? 1 !! 2;
-    @sockets.push: { :$socket, :poll($p), :&cb, keep => 1 };
+    @sockets.push: {
+        :$socket, :poll($p), :&cb,
+        :%params,
+        keep => 1
+    };
 }
 
 sub run-timers {
@@ -24,12 +32,12 @@ sub run-timers {
         if clock() > $since + $e<after> {
             if defined $e<interval> {
                 if clock() > $e<lastrun> + $e<interval> {
-                    $e<cb>.();
+                    $e<cb>.(|$e<params>);
                     $seen-action = True;
                     $e<lastrun> = clock();
                 }
             } else {
-                $e<cb>.();
+                $e<cb>.(|$e<params>);
                 $seen-action = True;
                 $e<keep> = 0;
             }
@@ -44,7 +52,7 @@ sub run-sockets {
     my $seen-action = False;
     for @sockets -> $e is rw {
         if $e<socket>.poll($e<poll>, 0.01) {
-            $e<cb>.() or $e<keep> = 0;
+            $e<cb>.(|$e<params>) or $e<keep> = 0;
             $seen-action = True;
         }
     }
@@ -53,8 +61,8 @@ sub run-sockets {
     return $seen-action;
 }
 
-our sub idle(:&cb!) {
-    @idlers.push(&cb);
+our sub idle(:&cb!, :%params) {
+    @idlers.push: { :&cb, :%params }
 }
 
 our sub run {
@@ -69,6 +77,6 @@ sub run-once {
     $seen-action = run-timers();
     $seen-action = run-sockets();
     if not $seen-action {
-        for @idlers { $_.() }
+        for @idlers { $_<cb>.(|$_<params>) }
     }
 }

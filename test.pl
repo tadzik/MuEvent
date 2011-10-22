@@ -25,22 +25,25 @@ MuEvent::socket(
     socket => $l,
     poll   => 'r',
     cb     => &socket-cb,
+    params => { sock => $l },
 );
 
-sub socket-cb {
+sub socket-cb(:$sock) {
     say "Oh gosh a client!";
-    my $s = $l.accept;
+    my $s = $sock.accept;
+
     MuEvent::socket(
         socket => $s, 
         poll   => 'r',
-        cb     => sub {
-            my $a = $s.recv;
+        params => { sock => $s },
+        cb     => sub (:$sock) {
+            my $a = $sock.recv;
             if $a {
                 print "Incoming transmission: $a";
                 return True;
             } else {
                 say "Client disconnected";
-                $s.close;
+                $sock.close;
                 return False;
             }
         }
