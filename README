@@ -1,0 +1,2 @@
+Stupid event loop, interface modeled after Perl 5's AnyEvent.
+More docs and tests coming soon.
