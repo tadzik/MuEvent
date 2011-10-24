@@ -1,6 +1,6 @@
 use Test;
 use MuEvent;
-plan 12;
+plan 13;
 
 my $l = IO::Socket::INET.new(
     :localhost('localhost'),
@@ -21,10 +21,10 @@ sub socket-cb(:$sock) {
         cb     => sub (:$sock) {
             my $a = $sock.recv;
             if $a {
-                is $a, $last-sent-message;
+                is $a, $last-sent-message, 'data received';
                 return True;
             } else {
-                ok 'disconnected';
+                pass 'disconnected';
                 $sock.close;
                 return False;
             }
@@ -36,6 +36,20 @@ sub socket-cb(:$sock) {
 
 my $c1 = IO::Socket::INET.new(:host('localhost'), :port(6666));
 my $c2 = IO::Socket::INET.new(:host('localhost'), :port(6666));
+
+MuEvent::socket(
+    socket => $l,
+    poll   => 'r',
+    cb     => &socket-cb,
+    params => { sock => $l },
+);
+
+MuEvent::socket(
+    socket => $l,
+    poll   => 'r',
+    cb     => &socket-cb,
+    params => { sock => $l },
+);
 
 MuEvent::timer(
     after => 2,
