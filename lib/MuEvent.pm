@@ -1,3 +1,4 @@
+#= Event-driven programming in Perl 6
 module MuEvent;
 
 my @timers;
@@ -5,10 +6,7 @@ my @sockets;
 my @idlers;
 my $since;
 
-sub clock {
-    nqp::p6box_n(pir::time__n())
-}
-
+#= Add an event run after a certain amount of time
 our sub timer(:&cb!, :$after!, :$interval, :%params) {
     @timers.push: {
         :$after, :$interval, :&cb,
@@ -17,6 +15,7 @@ our sub timer(:&cb!, :$after!, :$interval, :%params) {
     };
 }
 
+#= Add an IO::Socket to observe
 our sub socket(:&cb!, :$socket!, :$poll where 'r'|'w', :%params) {
     my $p = $poll eq 'r' ?? 1 !! 2;
     @sockets.push: {
@@ -24,6 +23,19 @@ our sub socket(:&cb!, :$socket!, :$poll where 'r'|'w', :%params) {
         :%params,
         keep => 1
     };
+}
+
+#= Add an event to be run when event loop is idle
+our sub idle(:&cb!, :%params) {
+    @idlers.push: { :&cb, :%params }
+}
+
+#= Run the event loop
+our sub run {
+    $since = clock();
+    loop {
+        run-once()
+    }
 }
 
 sub run-timers {
@@ -61,15 +73,8 @@ sub run-sockets {
     return $seen-action;
 }
 
-our sub idle(:&cb!, :%params) {
-    @idlers.push: { :&cb, :%params }
-}
-
-our sub run {
-    $since = clock();
-    loop {
-        run-once()
-    }
+sub clock {
+    nqp::p6box_n(pir::time__n())
 }
 
 sub run-once {
