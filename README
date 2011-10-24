@@ -1,2 +1,9 @@
 Stupid event loop, interface modeled after Perl 5's AnyEvent.
-More docs and tests coming soon.
+Use perl6 --doc lib/MuEvent.pm for some basic documentation and tests
+if you want more.
+
+If you want some more-less real life example, example.pl shows a simple
+application, which outputs stuff after 2 seconds, every 5 seconds,
+and prints everything that is sent to port 6666 on the local machine.
+It also prints "Nothing better to do" and sleeps for one second if it
+currently has nothing better to do.
