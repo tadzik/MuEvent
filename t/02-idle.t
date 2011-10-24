@@ -1,10 +1,14 @@
 use Test;
 use MuEvent;
 
-# all events sleep for 1 second, the first one is run after 2 seconds
-# (in 3rd second), the last one stops the program after 5,
-# so idle should run 3 times: 0th, 1st, 2nd and 4th second
-plan 5;
+# the tests should run as follows:
+# 0th second: idle
+# 1st second: idle
+# 2nd second: after 2
+# 3rd second: idle
+# 4th second: idle
+# 5th second: after 5
+plan 6;
 
 my $start;
 
