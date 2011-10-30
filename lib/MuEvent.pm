@@ -79,8 +79,8 @@ sub clock {
 
 sub run-once {
     my $seen-action = False;
-    $seen-action = run-timers();
-    $seen-action = run-sockets();
+    $seen-action   += run-timers();
+    $seen-action   += run-sockets();
     if not $seen-action {
         for @idlers { $_<cb>.(|$_<params>) }
     }
