@@ -44,9 +44,9 @@ sub run-timers {
         if clock() > $since + $e<after> {
             if defined $e<interval> {
                 if clock() > $e<lastrun> + $e<interval> {
+                    $e<lastrun> = clock();
                     $e<cb>.(|$e<params>);
                     $seen-action = True;
-                    $e<lastrun> = clock();
                 }
             } else {
                 $e<cb>.(|$e<params>);
