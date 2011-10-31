@@ -50,7 +50,7 @@ MuEvent::timer(
 MuEvent::timer(
     after => 9,
     cb    => sub {
-        ok ($start + 8 <= time <= $start + 9), 'after 5';
+        ok ($start + 8 <= time <= $start + 9), 'after 9';
         exit 0;
     }
 );
