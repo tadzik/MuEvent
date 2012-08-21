@@ -1,0 +1,7 @@
+{
+    "name"        : "MuEvent",
+    "version"     : "*",
+    "description" : "An AnyEvent lookalike",
+    "depends"     : [],
+    "source-url"  : "git://github.com/tadzik/MuEvent.git"
+}
