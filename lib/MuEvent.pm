@@ -74,7 +74,7 @@ sub run-sockets {
 }
 
 sub clock {
-    nqp::p6box_n(pir::time__n())
+    nqp::p6box_n(pir::time__N)
 }
 
 sub run-once {
