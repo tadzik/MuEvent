@@ -8,19 +8,18 @@ my $since;
 
 class MuEvent::Condvar {
     has &.cb;
-    has @.sent is rw;
+    has $.sent is rw;
     has $.flag is rw = False;
 
-    method send(*@data) {
+    method send($data?) {
         &.cb() if &.cb;
-        @.sent = @data if @data;
+        $.sent = $data if $data.defined;
         $.flag = True;
     }
     method recv() {
         $since = clock() unless $since.defined;
         MuEvent::_poll until $.flag;
-        return unless @.sent;
-        return @.sent > 1 ?? @.sent !! @.sent[0];
+        $.sent;
     }
 }
 
