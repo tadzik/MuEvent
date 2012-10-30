@@ -19,7 +19,8 @@ class MuEvent::Condvar {
     method recv() {
         $since = clock() unless $since.defined;
         MuEvent::_poll until $.flag;
-        return @.sent but True;
+        return unless @.sent;
+        return @.sent > 1 ?? @.sent !! @.sent[0];
     }
 }
 
