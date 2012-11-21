@@ -6,6 +6,23 @@ my @sockets;
 my @idlers;
 my $since;
 
+class MuEvent::Condvar {
+    has &.cb;
+    has $.sent is rw;
+    has $.flag is rw = False;
+
+    method send($data?) {
+        &.cb() if &.cb;
+        $.sent = $data if $data.defined;
+        $.flag = True;
+    }
+    method recv() {
+        $since = clock() unless $since.defined;
+        MuEvent::_poll until $.flag;
+        $.sent;
+    }
+}
+
 #= Add an event run after a certain amount of time
 our sub timer(:&cb!, :$after!, :$interval, :%params) {
     @timers.push: {
@@ -36,6 +53,15 @@ our sub run {
     loop {
         run-once()
     }
+}
+
+our sub _poll {
+    run-once()
+}
+
+#= Condvar
+our sub condvar(:&cb?) {
+    MuEvent::Condvar.new( cb => &cb );
 }
 
 sub run-timers {
