@@ -23,6 +23,27 @@ class MuEvent::Condvar {
     }
 }
 
+sub http_get(:$url!, :&cb!) is export {
+    my $sock = IO::Socket::INET.new(host => $url, port => 80);
+    my $req = "GET / HTTP/1.1\r\n"
+            ~ "Connection: Close\r\n"
+            ~ "Host: $url\r\n"
+            ~ "User-Agent: MuEvent/0.0 Perl6/$*PERL<compiler><ver>\r\n"
+            ~ "\r\n";
+    my $callback = sub {
+        &cb($sock.recv);
+        $sock.close;
+    }
+
+    MuEvent::socket(
+        socket => $sock,
+        poll   => 'r',
+        cb     => $callback,
+    );
+
+    $sock.send($req);
+}
+
 #= Add an event run after a certain amount of time
 our sub timer(:&cb!, :$after!, :$interval, :%params) {
     @timers.push: {
