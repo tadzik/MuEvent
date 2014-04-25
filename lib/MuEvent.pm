@@ -121,7 +121,7 @@ sub run-sockets {
 }
 
 sub clock {
-    nqp::p6box_n(pir::time__N)
+    nqp::p6box_n(nqp::time_n)
 }
 
 sub run-once {
