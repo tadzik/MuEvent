@@ -2,6 +2,9 @@
     "name"        : "MuEvent",
     "version"     : "*",
     "description" : "An AnyEvent lookalike",
+    "provides"    : {
+        "MuEvent": "lib/MuEvent.pm"
+    },
     "depends"     : [],
     "source-url"  : "git://github.com/tadzik/MuEvent.git"
 }
