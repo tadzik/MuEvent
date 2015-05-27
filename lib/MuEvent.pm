@@ -1,5 +1,5 @@
 #= Event-driven programming in Perl 6
-module MuEvent;
+unit module MuEvent;
 
 my @timers;
 my @sockets;
