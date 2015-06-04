@@ -1,6 +1,8 @@
 #= Event-driven programming in Perl 6
 unit module MuEvent;
 
+use nqp;
+
 my @timers;
 my @sockets;
 my @idlers;
